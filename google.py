@@ -1,11 +1,23 @@
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-import time
+from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
+from urllib.error import HTTPError
 import urllib.request
 import os
+import argparse
 
-print('명이 제작')
+print("명이 제작")
 
+parser = argparse.ArgumentParser(description="Google Image Crawling")
+parser.add_argument("-s","--search",action="store")
+parser.add_argument("-f","--filename",action="store")
+args = parser.parse_args()
+
+search = args.search
+filename = search if args.filename is None else args.filename
+
+if search is None:
+    print("google.py -h를 통해 도움말을 열람하세요.")
+    quit()
 
 def resource_path(relative_path):
     try:
@@ -17,10 +29,9 @@ def resource_path(relative_path):
 
 
 driver = webdriver.Edge(
-    executable_path=resource_path("MicrosoftWebDriver.exe"))
-inp = input('크롤링 : ')
-driver.get(f'https://www.google.co.kr/search?q={inp}&tbm=isch')
-
+    executable_path=resource_path("msedgedriver.exe"))
+driver.get(f'https://www.google.co.kr/search?q={search}&tbm=isch')
+driver.implicitly_wait(10)
 
 SCROLL_PAUSE_TIME = 1
 
@@ -28,37 +39,41 @@ SCROLL_PAUSE_TIME = 1
 last_height = driver.execute_script("return document.body.scrollHeight")
 
 while True:
-    try:
-        # Scroll down to bottom
-        driver.execute_script(
-            "window.scrollTo(0, document.body.scrollHeight);")
+    # Scroll down to bottom
+    driver.execute_script(
+        "window.scrollTo(0, document.body.scrollHeight);")
 
-        # Wait to load page
-        time.sleep(SCROLL_PAUSE_TIME)
+    # Wait to load page
+    driver.implicitly_wait(SCROLL_PAUSE_TIME)
 
-        # Calculate new scroll height and compare with last scroll height
-        new_height = driver.execute_script("return document.body.scrollHeight")
-        if new_height == last_height:
-            try:
-                driver.find_element_by_css_selector(".mye4qd").click()
-            except:
-                break
+    # Calculate new scroll height and compare with last scroll height
+    new_height = driver.execute_script("return document.body.scrollHeight")
+    if new_height == last_height:
+        try:
+            driver.find_element_by_css_selector(".mye4qd").click()
+        except ElementNotInteractableException:
+           break
+    last_height = new_height
 
-        last_height = new_height
-    except:
-        ''
 
 selem = driver.find_elements_by_css_selector('.rg_i.Q4LuWd')
 
-for i in range(len(selem)):
+if not os.path.exists("img"):
+    os.mkdir("img")
+
+for i, item in enumerate(selem):
     try:
-        print(i)
-        selem[i].click()
-        time.sleep(2)
+        webdriver.ActionChains(driver=driver).move_to_element(item).click(item).perform()
+        driver.implicitly_wait(2)
         img_url = driver.find_element_by_css_selector(
-            '#Sva75c>div>div>div.pxAole>div.tvh9oe.BIB1wf>c-wiz>div.OUZ5W>div.zjoqD>div>div.v4dQwb>a>img').get_attribute("src")
-        urllib.request.urlretrieve(img_url, f"test{i}.jpg")
-    except:
-        print('omg')
+            '#Sva75c > div > div > div.pxAole > div.tvh9oe.BIB1wf > c-wiz > div > div.OUZ5W > div.zjoqD > div.qdnLaf.isv-id > div > a > img').get_attribute("src")
+        urllib.request.urlretrieve(img_url, f"img/{filename}{i}.jpg")
+        print(f"Downloaded Image {i}.")
+
+    except NoSuchElementException as E:
+        print("No Such Element :",E)
+    except HTTPError as E:
+        print("Http Error :",E)
+    
 
 driver.close()

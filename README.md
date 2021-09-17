@@ -1,31 +1,14 @@
-# Google_Image_Crawling 사용 설명서
+# Google Image Crawling Program
 
-명이의 구글 이미지 크롤링 프로그램입니다.\
-제 역량 문제로 Pyinstaller를 사용해서 .exe 파일로 만들지는 못했고요...\
-죄송합니당.
+## 사용방법
 
-그래서 이 프로그램 실행을 위해서는 파이썬이 필요합니다.\
-파이썬은 https://www.python.org/downloads/ 에서 받으실 수 있습니다.
+### * Windows
+`google.py -s python -f python_img`
 
-일단 모든 준비가 끝나시면 다운받으시면 됩니다.\
-Crawling.zip 파일을 압축 해제해 주세요.\
-이제 그 안에는 google.py와 MicrosoftWevDriver가 있을겁니다.
+### * Linux / Mac
+`python google.py -s python -f python_img`
 
-google.py를 실행시켜주세요.
+### Arguments
 
-이제 명이 제작이라는 글씨가 뜨고 Microsoft Edge 브라우저가 뜰겁니다.\
-브라우저를 끄지 마시고, 잠시 치워주세요.\
-CMD 창에서 '크롤링 : '이란 글씨가 뜰겁니다. 그 뒤에다가 원하는 검색어를 쳐주세요.
-
-이제 검색어를 치시면 브라우저 창이 바뀌고, 스크롤이 계속 내려갑니다.\
-검색 더보기가 나오면, 검색 더보기도 클릭을 알아서 할 겁니다.
-
-참고로 찾아진 이미지의 몇개는 누락될 수 있습니다. \
-Error나 Omg라는 글씨가 출력되면 그 인덱스의 사진은 누락된 것입니다.
-
-참고로 이미지는 test{index}.jpg의 형태로 출력이 됩니다.\
-만약, png로 확장자를 변경하고 싶으시거나, test{index}의 이름이 마음에 들지 않으시다면, \
-파이썬 파일을 여시고 (VSCode나 메모장, idle) 60번째 줄의 f"test{i}.jpg"를 바꾸시면 됩니다.\
-
-참고로 이건 마이크로소프트의 엣지 드라이버를 사용했습니다.
-
+`-s` 나 `--search` 뒤에는 검색어를 붙여주세요 (필수)<br/>
+`-f` 나 `--filename` 뒤에는 파일 이름을 붙여주세요 [ ex) 파이썬 -> 파이썬1.jpg ] ( 선택, 안붙이면 검색어가 파일 이름이 됩니다. )
